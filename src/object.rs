@@ -29,17 +29,6 @@ impl Object {
         self.acceleration += force;
     }
 
-    pub fn integrate(&mut self, dt: f32, collisions: &Vec<Object>) {
-        let temp = self.old_position;
-        self.old_position = self.position;
-
-        self.apply_gravity();
-        self.apply_bounds();
-        self.apply_collisions(collisions); // this causes explosions ! :(
-
-        self.position += (self.position - temp) + self.acceleration * dt.pow(2f32);
-        self.acceleration *= Vec2::ZERO;
-    }
 
     pub fn apply_bounds(&mut self) {
         /* Forcefully keep objects within 300 of origin.
@@ -48,21 +37,6 @@ impl Object {
         let dist = self.position.distance(Vec2::ZERO) + self.radius;
         if dist > 300f32 {
             self.position = self.position.normalize_or_zero() * (300f32 - self.radius);
-        }
-    }
-
-    pub fn apply_collisions(&mut self, collisions: &Vec<Object>) {
-        for other in collisions {
-            // true equality wouldn't work since `other` is a clone, check position instead
-            if self.position == other.position {
-                continue;
-            }
-            let dist = self.position.distance(other.position) - self.radius - other.radius;
-            if dist <= 0f32 {
-                self.position = other.position
-                    + (self.position - other.position).normalize_or_zero() * (other.radius + self.radius);
-                println!("Updated distance is {}", self.position.distance(other.position) - self.radius - other.radius);
-            }
         }
     }
 
