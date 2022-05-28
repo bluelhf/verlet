@@ -29,22 +29,6 @@ impl Object {
         self.acceleration += force;
     }
 
-
-    pub fn apply_bounds(&mut self) {
-        /* Forcefully keep objects within 300 of origin.
-            * See main.rs#view for more information.
-            */
-        let dist = self.position.distance(Vec2::ZERO) + self.radius;
-        if dist > 300f32 {
-            self.position = self.position.normalize_or_zero() * (300f32 - self.radius);
-        }
-    }
-
-    pub fn apply_gravity(&mut self) {
-        // Acceleration due to gravity
-        self.accelerate(Vec2::new(0f32, -0.002f32));
-    }
-
     pub fn draw(&self, draw: &Draw) {
         let (r, g, b, a) = self.rgba;
         let stroke = gray(0.8);

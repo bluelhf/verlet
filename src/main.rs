@@ -74,17 +74,26 @@ fn update(_app: &App, model: &mut Model, _update: Update) {
             model.last_update = initial + add as u128;
             let len = model.objects.len();
             for i in 0..len {
-
+                
                 let (before, rest) = model.objects.as_mut_slice().split_at_mut(i);
                 let (current, after) = rest.split_at_mut(1);
                 let object = &mut current[0];
-
+                
                 
                 let temp = object.old_position;
                 object.old_position = object.position;
                 
-                object.apply_gravity();
-                object.apply_bounds();
+                // Gravity
+                object.accelerate(Vec2::new(0f32, -0.002f32));
+                
+                
+                /* Forcefully keep objects within 300 of origin.
+                * See main.rs#view for more information.
+                */
+                let dist = object.position.distance(Vec2::ZERO) + object.radius;
+                if dist > 300f32 {
+                    object.position = object.position.normalize_or_zero() * (300f32 - object.radius);
+                }
                 
                 for slice in [before, after] {
                     for other in slice {
